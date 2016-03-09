@@ -20,6 +20,7 @@ Two types of metrics are supported:
 curl -s http://169.254.169.254/openstack/latest/meta_data.json | sed -e 's/.*"uuid": "//; s/".*//'
 ```
 
+- Alternative run once the script [init_uuid](init_uuid/init.sh) in order to get the instance UUID automatically at startup
 - Define the ip and port of the monitoring server. Change 'server' field under 'Plugin network'
 - Define the interface you need to monitor. Change 'Interface' field under 'Plugin interface' 
 - Restart collectd
