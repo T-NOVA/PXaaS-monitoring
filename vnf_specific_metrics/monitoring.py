@@ -1,17 +1,17 @@
 #!/usr/bin/python
 '''
-    File: monitoring.py
-    Description: Sends Squid metrics to T-NOVA VIM infrastructure. 
-    Metrics:
-    - Number of HTTP requests received by Squid
-    - Cache hits percentage of all requests for the last 5 minutes
-    - Cache hits percentage of bytes sent for the last 5 minutes
-    - Memory hits percentage for the last 5 minutes (hits that are logged as TCP_MEM_HIT)
-    - Disk hits percentage for the last 5 minutes (hits that are logged as TCP_HIT)
-    - Cache disk utilization
-    - Cache memory utilization
-    - Number of users accessing the proxy
-    - CPU usage for the last 5 minutes
+File: monitoring.py
+Description: Sends Squid metrics to T-NOVA VIM infrastructure.
+Metrics:
+- Number of HTTP requests received by Squid
+- Cache hits percentage of all requests for the last 5 minutes
+- Cache hits percentage of bytes sent for the last 5 minutes
+- Memory hits percentage for the last 5 minutes (hits that are logged as TCP_MEM_HIT)
+- Disk hits percentage for the last 5 minutes (hits that are logged as TCP_HIT)
+- Cache disk utilization
+- Cache memory utilization
+- Number of users accessing the proxy
+- CPU usage for the last 5 minutes
 '''
 import argparse
 from influxdb import InfluxDBClient
@@ -39,26 +39,26 @@ class Monitoring(object):
 
     def send_metric(self, name, value):
         json_body = [
-        {
-            "measurement": name,
-            "tags": {
-                "host": get_uuid()
-                },
-            "fields": {
-                "value": value
-                }
-            }
-        ]
+                {
+                    "measurement": name,
+                    "tags": {
+                        "host": get_uuid()
+                        },
+                    "fields": {
+                        "value": value
+                        }
+                    }
+                ]
         self.client.write_points(json_body)
 
 if __name__ == '__main__':
-    dir_path = os.path.dirname(os.path.abspath(__file__))    
+    dir_path = os.path.dirname(os.path.abspath(__file__))
     shell = Monitoring()
     squid = Squidclient()
-   
+
     f = open(os.path.join(dir_path, 'logs.txt'), 'a')
     process = squid.execute()
-    
+
     if process:
         current_http = squid.parse(process, "Number of HTTP requests received:")
         hits_percentage = squid.parse(process, "Hits as % of all requests:", ",", False)
@@ -72,7 +72,7 @@ if __name__ == '__main__':
 
         if all((current_http, hits_percentage, memory_hits, disk_hits, cache_disk_utilization, cache_memory_utilization, number_of_users, cpu_usage)):
             current_http = int(current_http)
-            
+
             file = open(os.path.join(dir_path, 'state.txt'), 'r')
             previous_http = int(file.read())
             file.close()
@@ -82,7 +82,7 @@ if __name__ == '__main__':
             file = open(os.path.join(dir_path, 'state.txt'), 'w')
             file.write(str(current_http))
             file.close()
-            
+
             diff_http = current_http - previous_http # gets the number of HTTP requests since the previous measurement
             if diff_http < 0:
                 diff_http = 0
@@ -115,5 +115,5 @@ if __name__ == '__main__':
         f.write("time: "+datetime.now().strftime('%Y-%m-%d %H:%M:%S')+"\n")
         f.write('Unable to send metrics\n')
         f.write("----------------------\n")
-    
+
     f.close()

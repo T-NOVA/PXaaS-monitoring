@@ -1,7 +1,7 @@
-''' 
-    File: parsesquid.py
-    Description: Collects Squid statistics using the squidclient tool
-''' 
+'''
+File: parsesquid.py
+Description: Collects Squid statistics using the squidclient tool
+'''
 
 import subprocess
 import string
@@ -28,19 +28,19 @@ class Squidclient(object):
     def parse(self, process, start_string, end_string="\n", first=True):
         if process == False:
             return False
-        
+
         start = string.find(process, start_string)
         end = string.find(process, end_string, start)
-        
+
         if start == -1 or end == -1:
             return False
-        
+
         line = process[start:end]
         lis = string.split(line, ":")
-    
+
         if not lis:
             return False
-        
+
         if first:
             return string.strip(lis[1])
         else:
